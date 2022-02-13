@@ -9,6 +9,7 @@ int main(int argc, char *argv[], char *envp[])
     cout << log_info << endl;
 
     SQLTOOL_STARTUP(log_info)
+    SQLTOOL_BUF_LEN(128)
     auto res = SQLTOOL_GO("select * from ex1")
     SQLTOOL_SHUTDOWN
 
