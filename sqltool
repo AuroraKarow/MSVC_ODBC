@@ -16,6 +16,7 @@ SQLTOOL_BEGIN
 static  SQLHENV                     SQLTOOL_H_ENV;
 static  SQLHDBC                     SQLTOOL_H_DBC;
 static  SQLHSTMT                    SQLTOOL_H_STMT;
+static  SQLINTEGER                  SQLTOOL_LEN;
 
 SQLTOOL_END
 
@@ -29,5 +30,6 @@ SQLTOOL_END
 #include "sqltool.hpp"
 
 #define SQLTOOL_STARTUP(DB_INFO)    sqltool::sqltool_startup(DB_INFO);
+#define SQLTOOL_BUF_LEN(LEN)        SQLTOOL_LEN = LEN;
 #define SQLTOOL_GO(INST)            sqltool::sqltool_go(INST);
 #define SQLTOOL_SHUTDOWN            sqltool::sqltool_shutdown();
