@@ -1,0 +1,33 @@
+#pragma once
+#pragma comment(lib, "odbc32.lib")
+
+#include "bagrt"
+#include <Windows.h>
+#include <sql.h>
+#include <sqlext.h>
+
+#define SQLTOOL_BEGIN               namespace sqltool {
+#define SQLTOOL_END                 }
+#define SQLTOOL_AXIS                0
+#define SQLTOOL_UNIT                1
+
+SQLTOOL_BEGIN
+
+static  SQLHENV                     SQLTOOL_H_ENV;
+static  SQLHDBC                     SQLTOOL_H_DBC;
+static  SQLHSTMT                    SQLTOOL_H_STMT;
+
+SQLTOOL_END
+
+#define SQLTOOL_CHARSET             bagrt::charset_exchange
+#define SQLTOOL_LIST                bagrt::net_list
+#define SQLTOOL_MAP                 bagrt::net_map
+
+#define SQLTOOL_WCHAR(STR)          (SQLWCHAR*)(STR)
+#define SQLTOOL_CHAR(STR)           (SQLCHAR*)(STR)
+
+#include "sqltool.hpp"
+
+#define SQLTOOL_STARTUP(DB_INFO)    sqltool::sqltool_startup(DB_INFO);
+#define SQLTOOL_GO(INST)            sqltool::sqltool_go(INST);
+#define SQLTOOL_SHUTDOWN            sqltool::sqltool_shutdown();
