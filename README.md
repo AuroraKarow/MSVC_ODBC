@@ -8,4 +8,8 @@ ODBC C++
 Command `SQLTOOL_STARTUP` should be front of command `SQLTOOL_SHUTDOWN`, unduplicable.<br>
 <br>
 命令`SQLTOOL_BUF_LEN`必须先于`SQLTOOL_GO`且两者必须位于命令`SQLTOOL_STARTUP`和`SQLTOOL_SHUTDOWN`之间，可重复。<br>
-Command `SQLTOOL_BUF_LEN` should be front of command `SQLTOOL_GO` and between command `SQLTOOL_STARTUP` and `SQLTOOL_SHUTDOWN`, duplicable.
+Command `SQLTOOL_BUF_LEN` should be front of command `SQLTOOL_GO` and between command `SQLTOOL_STARTUP` and `SQLTOOL_SHUTDOWN`, duplicable.<br>
+
+## Windows ODBC
+Microsoft Windows ODBC API<br>
+https://docs.microsoft.com/zh-cn/sql/odbc/microsoft-open-database-connectivity-odbc?view=sql-server-ver15
