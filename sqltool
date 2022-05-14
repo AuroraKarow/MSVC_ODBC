@@ -1,7 +1,7 @@
 #pragma once
 #pragma comment(lib, "odbc32.lib")
 
-#include "bagrt"
+#include "async"
 #include <Windows.h>
 #include <sql.h>
 #include <sqlext.h>
@@ -21,7 +21,7 @@ static  SQLINTEGER                  SQLTOOL_LEN;
 SQLTOOL_END
 
 #define SQLTOOL_CHARSET             bagrt::charset_exchange
-#define SQLTOOL_LIST                bagrt::net_list
+#define SQLTOOL_SEQ                 bagrt::net_sequence
 #define SQLTOOL_MAP                 bagrt::net_map
 
 #define SQLTOOL_WCHAR(STR)          (SQLWCHAR*)(STR)
@@ -31,5 +31,5 @@ SQLTOOL_END
 
 #define SQLTOOL_STARTUP(DB_INFO)    sqltool::sqltool_startup(DB_INFO);
 #define SQLTOOL_BUF_LEN(LEN)        SQLTOOL_LEN = LEN;
-#define SQLTOOL_GO(INST)            sqltool::sqltool_go(INST);
+#define SQLTOOL_GO(INST)            sqltool::sqltool_go(INST, SQLTOOL_LEN);
 #define SQLTOOL_SHUTDOWN            sqltool::sqltool_shutdown();

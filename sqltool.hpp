@@ -2,7 +2,7 @@ SQLTOOL_BEGIN
 
 struct result_set final
 {
-    SQLTOOL_LIST<SQLTOOL_MAP<std::wstring, std::wstring>> data_set;
+    SQLTOOL_SEQ<SQLTOOL_MAP<std::string, std::string>> data_set;
     uint64_t row_cnt() {return data_set.size();}
     uint64_t col_cnt() {return data_set[SQLTOOL_AXIS].size();}
 };
@@ -39,6 +39,7 @@ bool sqltool_startup(db_info &log_info)
     auto ret_attr_env = SQLSetEnvAttr(SQLTOOL_H_ENV, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_INTEGER);
     auto ret_alloc_conn = SQLAllocConnect(SQLTOOL_H_ENV, &SQLTOOL_H_DBC);
     auto ret_conn = SQLConnectW(SQLTOOL_H_DBC, SQLTOOL_WCHAR(SQLTOOL_CHARSET(log_info.data_src).c_str()), SQL_NTS, SQLTOOL_WCHAR(SQLTOOL_CHARSET(log_info.user).c_str()), SQL_NTS, SQLTOOL_WCHAR(SQLTOOL_CHARSET(log_info.password).c_str()), SQL_NTS);
+    SQLSetConnectAttr(SQLTOOL_H_DBC, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_INTEGER);
     auto ret_alloc_stmt = SQLAllocStmt(SQLTOOL_H_DBC, &SQLTOOL_H_STMT);
     SQLSetStmtAttr(SQLTOOL_H_STMT, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER)SQL_SCROLLABLE, SQL_NTS);
     return (ret_alloc_env==SQL_SUCCESS||ret_alloc_env==SQL_SUCCESS_WITH_INFO) &&
@@ -52,11 +53,11 @@ result_set sqltool_go(std::string sql_inst, uint64_t buf_len = 128)
 {
     result_set rs;
     auto ret_exec = SQLExecDirectW(SQLTOOL_H_STMT, SQLTOOL_WCHAR(SQLTOOL_CHARSET(sql_inst).c_str()), SQL_NTS);
-    auto col_cnt = 0;
-    SQLNumResultCols(SQLTOOL_H_STMT, (short*)&col_cnt);
-    if(ret_exec==SQL_SUCCESS || ret_exec==SQL_SUCCESS_WITH_INFO) while (SQLFetch(SQLTOOL_H_STMT) != SQL_NO_DATA)
+    SQLSMALLINT col_cnt = 0;
+    SQLNumResultCols(SQLTOOL_H_STMT, &col_cnt);
+    if(ret_exec==SQL_SUCCESS || ret_exec==SQL_SUCCESS_WITH_INFO) if(col_cnt) while (SQLFetch(SQLTOOL_H_STMT)!=SQL_NO_DATA)
     {
-        SQLTOOL_MAP<std::wstring, std::wstring> row_data;
+        SQLTOOL_MAP<std::string, std::string> row_data(async::capsulate_function<uint64_t, std::string>(bagrt::string_hash));
         SQLULEN col_size = 0;
         SQLSMALLINT dec = 0;
         SQLSMALLINT db_type = 0;
@@ -74,7 +75,7 @@ result_set sqltool_go(std::string sql_inst, uint64_t buf_len = 128)
             std::wstring str_val = buf_data;
             delete [] buf_data;
             buf_data = nullptr;
-            row_data.insert(str_key, str_val);
+            row_data.insert(SQLTOOL_CHARSET(str_key), SQLTOOL_CHARSET(str_val));
         }
         rs.data_set.emplace_back(row_data);
     }
