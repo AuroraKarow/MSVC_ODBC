@@ -2,7 +2,9 @@
 #include <iostream>
 #include "sqltool"
 
-using namespace std;
+using std::cout;
+using std::endl;
+
 using namespace sqltool;
 
 int main(int argc, char *argv[], char *envp[])
