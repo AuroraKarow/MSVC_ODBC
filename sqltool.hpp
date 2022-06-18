@@ -1,37 +1,18 @@
 SQLTOOL_BEGIN
 
-struct result_set final
-{
-    SQLTOOL_SEQ<SQLTOOL_MAP<std::string, std::string>> data_set;
-    uint64_t row_cnt() {return data_set.size();}
-    uint64_t col_cnt() {return data_set[SQLTOOL_AXIS].size();}
-};
+uint64_t result_set::row_cnt() {return data_set.size();}
+uint64_t result_set::col_cnt() {return data_set[SQLTOOL_AXIS].size();}
 
-struct db_info final
-{
-    std::string user = "",
-        password = "",
-        data_src = "";
-    db_info() {}
-    db_info(std::wstring _data_src, std::wstring _user, std::wstring _password) :
-        user(SQLTOOL_CHARSET(_user)), password(SQLTOOL_CHARSET(_password)), data_src(SQLTOOL_CHARSET(_data_src)) {}
-    db_info(std::string _data_src, std::string _user, std::string _password) :
-        user(_user), password(_password), data_src(_data_src) {}
-    db_info(db_info &src) : user(src.user), password(src.password), data_src(src.data_src) {}
-    db_info(db_info &&src) : user(std::move(src.user)), password(std::move(src.password)), data_src(std::move(src.data_src)) {}
-    friend std::ostream &operator<<(std::ostream &output, db_info &src)
-    {
-        output << "[Data Source][" << src.data_src << ']' <<  std::endl;
-        output << "[User][" << src.user << ']' <<  std::endl;
-        output << "[Password][" << src.password << ']' <<  std::endl;
-        return output;
-    }
-    bool operator==(db_info &src) {return (user==src.user && password==src.password && data_src==src.data_src);}
-    bool operator!=(db_info &src) {return !(*this == src);}
-    void operator=(db_info &src) {new (this)db_info(src);}
-    void operator=(db_info &&src) {new (this)db_info(std::move(src));}
-    ~db_info(){};
-};
+
+inline db_info::db_info() {}
+inline db_info::db_info(std::wstring _data_src, std::wstring _user, std::wstring _password) : user(SQLTOOL_CHARSET(_user)), password(SQLTOOL_CHARSET(_password)), data_src(SQLTOOL_CHARSET(_data_src)) {}
+inline db_info::db_info(std::string _data_src, std::string _user, std::string _password) : user(_user), password(_password), data_src(_data_src) {}
+inline db_info::db_info(db_info &src) { *this = src; }
+inline db_info::db_info(db_info &&src) { *this = std::move(src); }
+inline bool db_info::operator==(db_info &src) { return (user==src.user && password==src.password && data_src==src.data_src); }
+inline bool db_info::operator!=(db_info &src) { return !(*this == src); }
+inline void db_info::operator=(db_info &src) { data_src = src.data_src; user = src.user; password = src.password; }
+inline void db_info::operator=(db_info &&src) { data_src = std::move(src.data_src); user = std::move(src.user); password = std::move(src.password); }
 
 bool sqltool_startup(db_info &log_info)
 {
@@ -49,7 +30,7 @@ bool sqltool_startup(db_info &log_info)
         (ret_alloc_stmt==SQL_SUCCESS||ret_alloc_stmt==SQL_SUCCESS_WITH_INFO);
 }
 
-result_set sqltool_go(std::string sql_inst, uint64_t buf_len = 128)
+result_set sqltool_go(std::string sql_inst, uint64_t buf_len)
 {
     result_set rs;
     auto ret_exec = SQLExecDirectW(SQLTOOL_H_STMT, SQLTOOL_WCHAR(SQLTOOL_CHARSET(sql_inst).c_str()), SQL_NTS);
@@ -57,7 +38,7 @@ result_set sqltool_go(std::string sql_inst, uint64_t buf_len = 128)
     SQLNumResultCols(SQLTOOL_H_STMT, &col_cnt);
     if(ret_exec==SQL_SUCCESS || ret_exec==SQL_SUCCESS_WITH_INFO) if(col_cnt) while (SQLFetch(SQLTOOL_H_STMT)!=SQL_NO_DATA)
     {
-        SQLTOOL_MAP<std::string, std::string> row_data(async::capsulate_function<uint64_t, std::string>(bagrt::string_hash));
+        SQLTOOL_MAP<std::string, std::string> row_data(HASH_STRING);
         SQLULEN col_size = 0;
         SQLSMALLINT dec = 0;
         SQLSMALLINT db_type = 0;

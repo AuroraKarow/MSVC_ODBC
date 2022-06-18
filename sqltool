@@ -27,9 +27,9 @@ SQLTOOL_END
 #define SQLTOOL_WCHAR(STR)          (SQLWCHAR*)(STR)
 #define SQLTOOL_CHAR(STR)           (SQLCHAR*)(STR)
 
-#include "sqltool.hpp"
-
 #define SQLTOOL_STARTUP(DB_INFO)    sqltool::sqltool_startup(DB_INFO);
 #define SQLTOOL_BUF_LEN(LEN)        SQLTOOL_LEN = LEN;
 #define SQLTOOL_GO(INST)            sqltool::sqltool_go(INST, SQLTOOL_LEN);
 #define SQLTOOL_SHUTDOWN            sqltool::sqltool_shutdown();
+
+#include "sqltool.h"
